@@ -15,7 +15,7 @@ SRC_URI="ftp://ftp.gnu.org/pub/gnu/cpio/cpio-${VERSION}.tar.bz2
 
 src_compile() {
 	cd ${B}
-	cygconf --with-rmt=/usr/lib/rmt \
+	cygconf --with-rmt=/usr/libexec/rmt \
 		gl_cv_func_getcwd_path_max=yes \
 		gl_cv_func_getcwd_abort_bug=no
 	cygmake
