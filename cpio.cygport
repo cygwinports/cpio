@@ -1,0 +1,31 @@
+NAME="cpio"
+VERSION=2.11
+RELEASE=2
+CATEGORY="Utils"
+REQUIRES="tar"
+SUMMARY="A backup and archiving utility"
+DESCRIPTION="This is GNU cpio, a program to manage archives of files.
+Cpio copies files into or out of a cpio or tar archive. An archive is a file
+that contains other files plus information about them, such as their pathname,
+owner, timestamps, and access permissions.  The archive can be another file
+on the disk, a magnetic tape, or a pipe."
+HOMEPAGE="http://www.gnu.org/software/cpio/"
+SRC_URI="ftp://ftp.gnu.org/pub/gnu/cpio/cpio-${VERSION}.tar.bz2
+	 ftp://ftp.gnu.org/pub/gnu/cpio/cpio-${VERSION}.tar.bz2.sig"
+
+src_compile() {
+	cd ${B}
+	cygconf --with-rmt=/usr/lib/rmt \
+		gl_cv_func_getcwd_path_max=yes \
+		gl_cv_func_getcwd_abort_bug=no
+	cygmake
+}
+
+src_install() {
+	cd ${B}
+	cyginstall
+	cd doc
+	make install-html DESTDIR=${D}
+	cd ${D}
+	rm usr/share/man/man1/mt.1*
+}
