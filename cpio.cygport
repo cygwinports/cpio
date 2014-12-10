@@ -1,6 +1,6 @@
 NAME="cpio"
 VERSION=2.11
-RELEASE=2
+RELEASE=3
 CATEGORY="Utils"
 REQUIRES="tar"
 SUMMARY="A backup and archiving utility"
@@ -12,20 +12,37 @@ on the disk, a magnetic tape, or a pipe."
 HOMEPAGE="http://www.gnu.org/software/cpio/"
 SRC_URI="ftp://ftp.gnu.org/pub/gnu/cpio/cpio-${VERSION}.tar.bz2
 	 ftp://ftp.gnu.org/pub/gnu/cpio/cpio-${VERSION}.tar.bz2.sig"
+PATCH_URI="
+	http://pkgs.fedoraproject.org/cgit/cpio.git/plain/cpio-2.9-rh.patch
+	http://pkgs.fedoraproject.org/cgit/cpio.git/plain/cpio-2.9-exitCode.patch
+	http://pkgs.fedoraproject.org/cgit/cpio.git/plain/cpio-2.9-dev_number.patch
+	http://pkgs.fedoraproject.org/cgit/cpio.git/plain/cpio-2.9.90-defaultremoteshell.patch
+	http://pkgs.fedoraproject.org/cgit/cpio.git/plain/cpio-2.10-patternnamesigsegv.patch
+	http://pkgs.fedoraproject.org/cgit/cpio.git/plain/cpio-2.11-stdio.in.patch
+	http://pkgs.fedoraproject.org/cgit/cpio.git/plain/cpio-2.10-longnames-split.patch
+	http://pkgs.fedoraproject.org/cgit/cpio.git/plain/cpio-2.11-crc-fips-nit.patch
+	http://pkgs.fedoraproject.org/cgit/cpio.git/plain/cpio-2.11-crc-large-files.patch
+	http://pkgs.fedoraproject.org/cgit/cpio.git/plain/cpio-2.11-treat-read-errors.patch
+	http://pkgs.fedoraproject.org/cgit/cpio.git/plain/cpio-2.11-ru-translation.patch
+	http://pkgs.fedoraproject.org/cgit/cpio.git/plain/cpio-2.11-CVE-2014-9112.patch
+	http://pkgs.fedoraproject.org/cgit/cpio.git/plain/cpio-2.11-testsuite-CVE-2014-9112.patch
+"
 
 src_compile() {
+	cd ${S}
+	cygautoreconf
 	cd ${B}
 	cygconf --with-rmt=/usr/libexec/rmt \
+		ac_cv_func___fpending=yes \
 		gl_cv_func_getcwd_path_max=yes \
 		gl_cv_func_getcwd_abort_bug=no
 	cygmake
+	cygmake -j1 -C po update-gmo
 }
 
 src_install() {
 	cd ${B}
 	cyginstall
-	cd doc
-	make install-html DESTDIR=${D}
-	cd ${D}
-	rm usr/share/man/man1/mt.1*
+	cygmake -C doc install-html DESTDIR=${D} htmldir=/usr/share/doc/cpio
+	rm -f ${D}/usr/share/man/man1/mt.1*
 }
